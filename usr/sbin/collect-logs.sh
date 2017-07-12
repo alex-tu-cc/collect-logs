@@ -29,7 +29,7 @@ main() {
     uname -a > "$LOGS_FOLDER/uname-a.log"
     lsblk -a > "$LOGS_FOLDER/lsblk-a.log"
     sudo ldconfig -v > "$LOGS_FOLDER/ldconfig-v.log"
-    sudo lshw -html > "$LOGS_FOLDER/lshw.html"
+    sudo lshw > "$LOGS_FOLDER/lshw.log"
 
     get_bios_info
     get_audio_logs
