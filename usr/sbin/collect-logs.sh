@@ -17,7 +17,7 @@ main() {
     cd "$OLDPWD"
 
 # call log collector one by one.
-    lspci -vvvnn > "$LOGS_FOLDER/lspci-vvvnn.log"
+    sudo lspci -vvvnn > "$LOGS_FOLDER/lspci-vvvnn.log"
     lsusb -v > "$LOGS_FOLDER/lsusb-v.log"
     dmesg > "$LOGS_FOLDER/dmesg.log"
     lsmod > "$LOGS_FOLDER/lsmod.log"
@@ -50,6 +50,10 @@ main() {
     git commit -m "$(git status)"
 #    tar Jcvf "$LOGS_FOLDER.tar.xz $LOGS_FOLDER"
 #    echo "all logs are in $LOGS_FOLDER.tar.xz "
+
+    echo $USER > /usr/share/collect-logs/config
+
+
 }
 
 get_bios_info() {
