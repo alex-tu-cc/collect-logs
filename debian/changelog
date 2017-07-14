@@ -1,3 +1,21 @@
+debug-logs-collector (1.3.10) xenial; urgency=medium
+
+  * bump version
+
+ -- Alex Tu <alex.tu@canonical.com>  Fri, 14 Jul 2017 17:11:04 +0800
+
+debug-logs-collector (1.3.9) xenial; urgency=medium
+
+  * execute lsusb by sudo, so that fixed permission issue.
+
+ -- Alex Tu <alex.tu@canonical.com>  Fri, 14 Jul 2017 16:39:30 +0800
+
+debug-logs-collector (1.3.8) xenial; urgency=medium
+
+  * fix permission error.
+
+ -- Alex Tu <alex.tu@canonical.com>  Fri, 14 Jul 2017 16:05:37 +0800
+
 debug-logs-collector (1.3.7) xenial; urgency=medium
 
   * add cron job to check if logs collected after hw changed

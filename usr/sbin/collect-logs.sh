@@ -4,6 +4,8 @@ LOGS_FOLDER="$HOME/collect-logs"
 set -x
 set -e
 main() {
+# record the user name for check-hw-changes.sh notification.
+    echo $USER | sudo tee -a /usr/share/collect-logs/config
 # prepare folder
     cd "$LOGS_FOLDER"
     git config --get user.name || git config --global user.name "$0"
@@ -18,7 +20,7 @@ main() {
 
 # call log collector one by one.
     sudo lspci -vvvnn > "$LOGS_FOLDER/lspci-vvvnn.log"
-    lsusb -v > "$LOGS_FOLDER/lsusb-v.log"
+    sudo lsusb -v > "$LOGS_FOLDER/lsusb-v.log"
     dmesg > "$LOGS_FOLDER/dmesg.log"
     lsmod > "$LOGS_FOLDER/lsmod.log"
     dkms status > "$LOGS_FOLDER/dkms-status.log"
@@ -48,10 +50,7 @@ main() {
     cd "$LOGS_FOLDER"
     git add .
     git commit -m "$(git status)"
-#    tar Jcvf "$LOGS_FOLDER.tar.xz $LOGS_FOLDER"
-#    echo "all logs are in $LOGS_FOLDER.tar.xz "
 
-    echo $USER > /usr/share/collect-logs/config
 
 
 }
