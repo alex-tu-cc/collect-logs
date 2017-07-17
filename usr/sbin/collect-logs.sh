@@ -1,5 +1,4 @@
 #!/bin/bash
-
 LOGS_FOLDER="$HOME/collect-logs"
 set -x
 set -e
@@ -22,6 +21,7 @@ main() {
     sudo lspci -vvvnn > "$LOGS_FOLDER/lspci-vvvnn.log"
     sudo lsusb -v > "$LOGS_FOLDER/lsusb-v.log"
     dmesg > "$LOGS_FOLDER/dmesg.log"
+    cat dmesg | sed 's/[0-9]*\.[0-9]*\]//g' > dmesg.stripped
     lsmod > "$LOGS_FOLDER/lsmod.log"
     dkms status > "$LOGS_FOLDER/dkms-status.log"
     rfkill list > "$LOGS_FOLDER/rfkill-l.log"
@@ -143,7 +143,8 @@ usage ()
 
     Options:
     -h|help       Display this message
-    -v|version    Display script version"
+    -v|version    Display script version
+    -p|path       the path you would like to store logs, default is $HOME/collect-logs"
 
 }    # ----------  end of function usage  ----------
 
@@ -158,6 +159,7 @@ do
     h|help     )  usage; exit 0   ;;
 
     v|version  )  echo "$0 -- Version $__ScriptVersion"; exit 0   ;;
+    p|path  )  shift;LOGS_FOLDER="$1" ;;
 
     * )  echo -e "\n  Option does not exist : $OPTARG\n"
           usage; exit 1   ;;
