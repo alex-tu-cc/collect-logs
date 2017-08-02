@@ -18,7 +18,7 @@ main() {
     cd "$OLDPWD"
 
 # call log collector one by one.
-    sudo lspci -vvvnn > "$LOGS_FOLDER/lspci-vvvnn.log"
+    lspci -vvvnn > "$LOGS_FOLDER/lspci-vvvnn.log"
     sudo lsusb -v > "$LOGS_FOLDER/lsusb-v.log"
     dmesg > "$LOGS_FOLDER/dmesg.log"
     cat dmesg | sed 's/[0-9]*\.[0-9]*\]//g' > dmesg.stripped

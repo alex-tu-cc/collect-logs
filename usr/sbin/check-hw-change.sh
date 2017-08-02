@@ -20,9 +20,10 @@ notify_user(){
     wall "$1"
 }
 
-USER_HOME=/home/$(cat /usr/share/collect-logs/config)
-LOGS_FOLDER=$USER_HOME/collect-logs
-if [ ! "$( lspci -vvvnn | md5sum - | cut -d ' ' -f 1 )" == "$(md5sum $LOGS_FOLDER/lspci-vvvnn.log | cut -d ' ' -f 1 )" ]; then
+NOT_ROOT_USER="$(cat /usr/share/collect-logs/config)"
+NOT_ROOT_USER_HOME="/home/$NOT_ROOT_USER"
+LOGS_FOLDER="$NOT_ROOT_USER_HOME/collect-logs"
+if [ ! "$( sudo -u $NOT_ROOT_USER lspci -vvvnn | md5sum - | cut -d ' ' -f 1 )" == "$(md5sum $LOGS_FOLDER/lspci-vvvnn.log | cut -d ' ' -f 1 )" ]; then
     notify_user "pci hw changed!! please collect-logs again.";
     exit 0
 fi
