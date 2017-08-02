@@ -4,7 +4,7 @@ set -x
 set -e
 main() {
 # record the user name for check-hw-changes.sh notification.
-    echo $USER | sudo tee -a /usr/share/collect-logs/config
+    echo $USER | sudo tee /usr/share/collect-logs/config
 # prepare folder
     cd "$LOGS_FOLDER"
     git config --get user.name || git config --global user.name "$0"
