@@ -18,6 +18,7 @@ main() {
     cd "$OLDPWD"
 
 # call log collector one by one.
+    rm -rf "$LOGS_FOLDER/*"
     lspci -vvvnn > "$LOGS_FOLDER/lspci-vvvnn.log"
     sudo lsusb -v > "$LOGS_FOLDER/lsusb-v.log"
     dmesg > "$LOGS_FOLDER/dmesg.log"
@@ -33,6 +34,7 @@ main() {
     sudo ldconfig -v > "$LOGS_FOLDER/ldconfig-v.log"
     sudo lshw > "$LOGS_FOLDER/lshw.log"
 
+    get_kernel_debug_files
     get_bios_info
     get_audio_logs
     get_nvidia_logs
@@ -49,10 +51,26 @@ main() {
 # commit logs.
     cd "$LOGS_FOLDER"
     git add .
-    git commit -m "$(git status)"
+    git commit -m "collected from $(cat /sys/devices/virtual/dmi/id/product_name)"
 
 
 
+}
+
+
+get_kernel_debug_files()
+{
+    for file in $(find /sys/kernel/debug/);do test -f $file && stat -c %A $file | grep r >> /dev/null &&  collect_kernel_debug_file $file; done
+}
+
+# $1 target
+collect_kernel_debug_file()
+{
+    echo "$1" | grep tracing && return
+    [[ $(basename "$1") == "registers" ]] && return
+    [[ $(basename "$1") == "mem_value" ]] && return
+    [[ $(basename "$1") == "access" ]] && return
+    echo "$1" | cpio -p --make-directories "$LOGS_FOLDER" && cat "$1" > "$LOGS_FOLDER/$1"&
 }
 
 get_bios_info() {
