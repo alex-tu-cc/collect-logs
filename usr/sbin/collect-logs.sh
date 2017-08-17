@@ -21,8 +21,6 @@ main() {
     rm -rf "$LOGS_FOLDER/*"
     lspci -vvvnn > "$LOGS_FOLDER/lspci-vvvnn.log"
     sudo lsusb -v > "$LOGS_FOLDER/lsusb-v.log"
-    dmesg > "$LOGS_FOLDER/dmesg.log"
-    cat dmesg | sed 's/[0-9]*\.[0-9]*\]//g' > dmesg.stripped
     lsmod > "$LOGS_FOLDER/lsmod.log"
     dkms status > "$LOGS_FOLDER/dkms-status.log"
     rfkill list > "$LOGS_FOLDER/rfkill-l.log"
@@ -33,6 +31,8 @@ main() {
     lsblk -a > "$LOGS_FOLDER/lsblk-a.log"
     sudo ldconfig -v > "$LOGS_FOLDER/ldconfig-v.log"
     sudo lshw > "$LOGS_FOLDER/lshw.log"
+    mkdir -p "$LOGS_FOLDER/proc"
+    cat /proc/cmdline > "$LOGS_FOLDER/proc/cmdline"
 
     get_kernel_debug_files
     get_bios_info
@@ -100,18 +100,23 @@ get_network_manager_logs() {
 }
 
 get_wwan_card_logs() {
-    #get modem hardware information
-    if [[ -e $(which mmcli) ]]; then
-        rm -f "$LOGS_FOLDER/mmcli.log"
-        local modem_index=$(mmcli -L | grep Modem | awk -F'/| ' '{ print $6}')
-        printf "\n\$mmcli\n"; mmcli -L; printf "\n\$mmcli -m $modem_index "; mmcli -m $modem_index >> "$LOGS_FOLDER/mmcli.log" || true
-    fi
-    # check firmware version
-    [[ !  -e $(which mbimcli) ]] && sudo apt-get install -y libmbim-utils
-    if ls /dev/cdc-wdm* ;then
-        for node in /dev/cdc-wdm*; do
-            sudo mbimcli -d "$node" --query-device-caps --verbose > "$LOGS_FOLDER/mbimcli-d-$(basename $node).log" || true
-        done
+    # check modemmanager works first.
+    if systemctl show --property=SubState | grep running; then
+        #get modem hardware information
+        if [[ -e $(which mmcli) ]]; then
+            rm -f "$LOGS_FOLDER/mmcli.log"
+            local modem_index=$(mmcli -L | grep Modem | awk -F'/| ' '{ print $6}')
+            printf "\n\$mmcli\n"; mmcli -L; printf "\n\$mmcli -m $modem_index "; mmcli -m $modem_index >> "$LOGS_FOLDER/mmcli.log" || true
+        fi
+        # check firmware version
+        [[ !  -e $(which mbimcli) ]] && sudo apt-get install -y libmbim-utils
+        if ls /dev/cdc-wdm* ;then
+            for node in /dev/cdc-wdm*; do
+                sudo mbimcli -d "$node" --query-device-caps --verbose > "$LOGS_FOLDER/mbimcli-d-$(basename $node).log" || true
+            done
+        fi
+    else
+        touch "$LOGS_FOLDER/ModemManager.service.dead"
     fi
 }
 
@@ -129,8 +134,10 @@ get_manifest_from_recovery() {
 }
 
 get_system_logs() {
+    dmesg > "$LOGS_FOLDER/dmesg.log"
+    cat dmesg | sed 's/[0-9]*\.[0-9]*\]//g' > "$LOGS_FOLDER/dmesg.stripped"
     find /var/log/syslog | cpio -p --make-directories "$LOGS_FOLDER"
-    find /var/log/Xorg.0.log | cpio -p --make-directories "$LOGS_FOLDER"
+    find /var/log/Xorg.0* | cpio -p --make-directories "$LOGS_FOLDER"
     journalctl > "$LOGS_FOLDER/journalctl.log"
 }
 
