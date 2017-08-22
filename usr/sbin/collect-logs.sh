@@ -19,6 +19,9 @@ main() {
 
 # call log collector one by one.
     rm -rf "$LOGS_FOLDER/*"
+# prepare env parameter, so that collecting could be triggerred by ssh.
+    [[ -z $DISPLAY ]] && export DISPLAY=:0
+
     lspci -vvvnn > "$LOGS_FOLDER/lspci-vvvnn.log"
     sudo lsusb -v > "$LOGS_FOLDER/lsusb-v.log"
     lsmod > "$LOGS_FOLDER/lsmod.log"
@@ -33,8 +36,10 @@ main() {
     sudo lshw > "$LOGS_FOLDER/lshw.log"
     mkdir -p "$LOGS_FOLDER/proc"
     cat /proc/cmdline > "$LOGS_FOLDER/proc/cmdline"
+    xrandr > "$LOGS_FOLDER/proc/xrandr"
+    xrandr --listproviders > "$LOGS_FOLDER/proc/xrandr--listproviders"
 
-    get_kernel_debug_files
+    #get_kernel_debug_files
     get_bios_info
     get_audio_logs
     get_nvidia_logs
@@ -147,7 +152,6 @@ get_etc_default_files(){
 
 
 get_xinput_logs() {
-    [[ -z $DISPLAY ]] && export DISPLAY=:0
     xinput > "$LOGS_FOLDER/xinput.log"
 }
 
