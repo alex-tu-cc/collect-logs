@@ -12,17 +12,18 @@ main() {
     if [ ! -d ".git" ]; then
         git init
     else
-        git clean -x -d -f
-        git checkout . || true
+        rm -rf "$LOGS_FOLDER/*"
+#        git clean -x -d -f
+#        git checkout . || true
     fi
     cd "$OLDPWD"
 
 # call log collector one by one.
-    rm -rf "$LOGS_FOLDER/*"
 # prepare env parameter, so that collecting could be triggerred by ssh.
     [[ -z $DISPLAY ]] && export DISPLAY=:0
 
     lspci -vvvnn > "$LOGS_FOLDER/lspci-vvvnn.log"
+    lspci -t > "$LOGS_FOLDER/lspci-t.log"
     sudo lsusb -v > "$LOGS_FOLDER/lsusb-v.log"
     lsmod > "$LOGS_FOLDER/lsmod.log"
     dkms status > "$LOGS_FOLDER/dkms-status.log"
@@ -75,6 +76,8 @@ collect_kernel_debug_file()
     [[ $(basename "$1") == "registers" ]] && return
     [[ $(basename "$1") == "mem_value" ]] && return
     [[ $(basename "$1") == "access" ]] && return
+    [[ $(basename "$1") == "amdgpu_gtt" ]] && return
+    [[ $(basename "$1") == "amdgpu_vram" ]] && return
     echo "$1" | cpio -p --make-directories "$LOGS_FOLDER" && cat "$1" > "$LOGS_FOLDER/$1"&
 }
 
