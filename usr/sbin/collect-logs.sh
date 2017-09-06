@@ -109,7 +109,7 @@ get_network_manager_logs() {
 
 get_wwan_card_logs() {
     # check modemmanager works first.
-    if systemctl show --property=SubState | grep running; then
+    if systemctl show --property=SubState ModemManager.service | grep running; then
         #get modem hardware information
         if [[ -e $(which mmcli) ]]; then
             rm -f "$LOGS_FOLDER/mmcli.log"
