@@ -1,3 +1,10 @@
+debug-logs-collector (1.3.16.1) xenial; urgency=medium
+
+  * fix modem manager service checking
+
+
+ -- Alex Tu <alex.tu@canonical.com>  Wed, 06 Sep 2017 17:53:29 +0800
+
 debug-logs-collector (1.3.16) xenial; urgency=medium
 
   * remove huge files from amdgpu
