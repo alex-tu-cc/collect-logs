@@ -40,6 +40,7 @@ main() {
     xrandr > "$LOGS_FOLDER/proc/xrandr"
     xrandr --listproviders > "$LOGS_FOLDER/proc/xrandr--listproviders"
 
+    get_kernel_information
     #get_kernel_debug_files
     get_bios_info
     get_audio_logs
@@ -63,6 +64,16 @@ main() {
 
 }
 
+
+get_kernel_information()
+{
+    # get kernel config
+    local local_kernel_build=/lib/modules/`uname -r`/build/
+    mkdir -p $LOGS_FOLDER/$local_kernel_build
+    cp $local_kernel_build/.config $LOGS_FOLDER/$local_kernel_build/config
+    # get alll module info
+    lsmod | cut -d ' ' -f1 | xargs modinfo > $LOGS_FOLDER/modinfo.log
+}
 
 get_kernel_debug_files()
 {
