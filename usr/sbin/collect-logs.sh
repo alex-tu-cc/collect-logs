@@ -40,8 +40,9 @@ main() {
     xrandr > "$LOGS_FOLDER/proc/xrandr"
     xrandr --listproviders > "$LOGS_FOLDER/proc/xrandr--listproviders"
 
+    get_nvme_info
     get_kernel_information
-    #get_kernel_debug_files
+    [[ "$FULL" == "1" ]] && get_kernel_debug_files
     get_bios_info
     get_audio_logs
     get_nvidia_logs
@@ -64,7 +65,14 @@ main() {
 
 }
 
+get_nvme_info()
+{
+   if  mount | grep nvme;then
+        [[ ! -x $(which nvme) ]] && sudo apt-get install -y nvme-cli
+        sudo nvme get-feature -f 0x0c -H /dev/nvme0n1 > "$LOGS_FOLDER/nvme_info.log"
+    fi
 
+}
 get_kernel_information()
 {
     # get kernel config
@@ -72,24 +80,30 @@ get_kernel_information()
     mkdir -p $LOGS_FOLDER/$local_kernel_build
     cp $local_kernel_build/.config $LOGS_FOLDER/$local_kernel_build/config
     # get alll module info
-    lsmod | cut -d ' ' -f1 | xargs modinfo > $LOGS_FOLDER/modinfo.log
+    lsmod | grep -v Module | cut -d ' ' -f1 | xargs modinfo > $LOGS_FOLDER/modinfo.log
 }
 
 get_kernel_debug_files()
 {
     for file in $(find /sys/kernel/debug/);do test -f $file && stat -c %A $file | grep r >> /dev/null &&  collect_kernel_debug_file $file; done
+    for file in $(find /sys/devices);do test -f $file && stat -c %A $file | grep r >> /dev/null &&  collect_kernel_debug_file $file; done
 }
 
 # $1 target
 collect_kernel_debug_file()
 {
-    echo "$1" | grep tracing && return
-    [[ $(basename "$1") == "registers" ]] && return
-    [[ $(basename "$1") == "mem_value" ]] && return
-    [[ $(basename "$1") == "access" ]] && return
-    [[ $(basename "$1") == "amdgpu_gtt" ]] && return
-    [[ $(basename "$1") == "amdgpu_vram" ]] && return
-    echo "$1" | cpio -p --make-directories "$LOGS_FOLDER" && cat "$1" > "$LOGS_FOLDER/$1"&
+    # filter out the size which more than 1M
+
+   # filter out the size which more than 1M
+   if  ! `ls -lh  $1| awk '{print $5}' | grep M`; then
+        echo "$1" | grep tracing && return
+        [[ $(basename "$1") == "registers" ]] && return
+        [[ $(basename "$1") == "mem_value" ]] && return
+        [[ $(basename "$1") == "access" ]] && return
+        [[ $(basename "$1") == "amdgpu_gtt" ]] && return
+        [[ $(basename "$1") == "amdgpu_vram" ]] && return
+        echo "$1" | cpio -p --make-directories "$LOGS_FOLDER" && cat "$1" > "$LOGS_FOLDER/$1"&
+    fi
 }
 
 get_bios_info() {
@@ -187,6 +201,7 @@ usage ()
     Options:
     -h|help       Display this message
     -v|version    Display script version
+    -f|full       get full logs which include /sys
     -p|path       the path you would like to store logs, default is $HOME/collect-logs"
 
 }    # ----------  end of function usage  ----------
@@ -195,13 +210,16 @@ usage ()
 #  Handle command line arguments
 #-----------------------------------------------------------------------
 
-while getopts ":hv" opt
+while getopts ":hvfp" opt
 do
   case $opt in
 
     h|help     )  usage; exit 0   ;;
 
     v|version  )  echo "$0 -- Version $__ScriptVersion"; exit 0   ;;
+    f|full  )
+        FULL=1; echo "$0 -- Version $__ScriptVersion";
+        ;;
     p|path  )  shift;LOGS_FOLDER="$1" ;;
 
     * )  echo -e "\n  Option does not exist : $OPTARG\n"
