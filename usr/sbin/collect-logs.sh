@@ -80,7 +80,8 @@ get_kernel_information()
     mkdir -p $LOGS_FOLDER/$local_kernel_build
     cp $local_kernel_build/.config $LOGS_FOLDER/$local_kernel_build/config
     # get alll module info
-    lsmod | grep -v Module | cut -d ' ' -f1 | xargs modinfo > $LOGS_FOLDER/modinfo.log
+    lsmod | grep -v Module | grep -v nvidia | cut -d ' ' -f1 | xargs modinfo > $LOGS_FOLDER/modinfo.log
+    lsmod | grep nvidia && modinfo nvidia-375 >> $LOGS_FOLDER/modinfo.log
 }
 
 get_kernel_debug_files()
@@ -95,8 +96,9 @@ collect_kernel_debug_file()
     # filter out the size which more than 1M
 
    # filter out the size which more than 1M
-   if  ! `ls -lh  $1| awk '{print $5}' | grep M`; then
-        echo "$1" | grep tracing && return
+   #if  ! `ls -lh  $1| awk '{print $5}' | grep M`; then
+   if [[ $(stat -c %s $1) < 10000 ]]; then
+        echo "$1" | grep "tracing\|dynamic_debug" && return
         [[ $(basename "$1") == "registers" ]] && return
         [[ $(basename "$1") == "mem_value" ]] && return
         [[ $(basename "$1") == "access" ]] && return
