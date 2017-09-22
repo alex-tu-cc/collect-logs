@@ -26,7 +26,7 @@ main() {
     lspci -t > "$LOGS_FOLDER/lspci-t.log"
     sudo lsusb -v > "$LOGS_FOLDER/lsusb-v.log"
     lsmod > "$LOGS_FOLDER/lsmod.log"
-    dkms status > "$LOGS_FOLDER/dkms-status.log"
+    [[ -e `which dkms` ]] &&  dkms status > "$LOGS_FOLDER/dkms-status.log"
     rfkill list > "$LOGS_FOLDER/rfkill-l.log"
     hciconfig > "$LOGS_FOLDER/hciconfig.log"
     udevadm info -e > "$LOGS_FOLDER/udevadm-info-e.log"
