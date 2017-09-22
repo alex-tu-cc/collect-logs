@@ -81,7 +81,7 @@ get_kernel_information()
     cp $local_kernel_build/.config $LOGS_FOLDER/$local_kernel_build/config
     # get alll module info
     lsmod | grep -v Module | grep -v nvidia | cut -d ' ' -f1 | xargs modinfo > $LOGS_FOLDER/modinfo.log
-    lsmod | grep nvidia && modinfo nvidia-375 >> $LOGS_FOLDER/modinfo.log
+    lsmod | grep nvidia && modinfo nvidia-375 >> $LOGS_FOLDER/modinfo.log || true
 }
 
 get_kernel_debug_files()
