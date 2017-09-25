@@ -99,6 +99,7 @@ collect_kernel_debug_file()
    #if  ! `ls -lh  $1| awk '{print $5}' | grep M`; then
    if [[ $(stat -c %s $1) < 10000 ]]; then
         echo "$1" | grep "tracing\|dynamic_debug" && return
+        [[ $(basename "$1") == "i915_ggptt_info" ]] && return
         [[ $(basename "$1") == "registers" ]] && return
         [[ $(basename "$1") == "mem_value" ]] && return
         [[ $(basename "$1") == "access" ]] && return

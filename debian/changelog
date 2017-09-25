@@ -1,3 +1,9 @@
+debug-logs-collector (1.3.23) xenial; urgency=medium
+
+  * filter out big log files. i915_ggptt_info
+
+ -- Alex Tu <alex.tu@canonical.com>  Mon, 25 Sep 2017 11:41:42 +0800
+
 debug-logs-collector (1.3.22) xenial; urgency=medium
 
   * take non-nvidia
