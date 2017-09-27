@@ -124,6 +124,10 @@ get_audio_logs() {
 
 get_nvidia_logs() {
     [[ -x $(which nvidia-bug-report.sh) ]] && sudo nvidia-bug-report.sh --output-file "$LOGS_FOLDER/nvidia-bug-report" || true
+    if [ -e /etc/X11/xorg.conf ];then
+        mkdir -p /etc/X11
+        cp /etc/X11/xorg.conf "$LOGS_FOLDER/"
+    fi
 }
 
 get_network_manager_logs() {
