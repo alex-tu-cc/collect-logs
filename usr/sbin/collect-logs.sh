@@ -75,6 +75,8 @@ get_nvme_info()
 }
 get_kernel_information()
 {
+    # get glxinfo
+    glxinfo > "$LOGS_FOLDER/glxinfo.log"
     # get kernel config
     local local_kernel_build=/lib/modules/`uname -r`/build/
     mkdir -p $LOGS_FOLDER/$local_kernel_build
