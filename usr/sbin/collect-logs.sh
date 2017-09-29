@@ -59,7 +59,7 @@ main() {
 # commit logs.
     cd "$LOGS_FOLDER"
     git add .
-    git commit -m "collected from $(cat /sys/devices/virtual/dmi/id/product_name)"
+    git commit -m "collected from $(cat /sys/devices/virtual/dmi/id/product_name) + BIOS $(grep -m 1 Version dmidecode.log)"
 
 
 
