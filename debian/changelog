@@ -1,3 +1,9 @@
+debug-logs-collector (1.3.27) xenial; urgency=medium
+
+  * take care the case which display :0 failed
+
+ -- Alex Tu <alex.tu@canonical.com>  Sat, 30 Sep 2017 17:37:21 +0800
+
 debug-logs-collector (1.3.26) xenial; urgency=medium
 
   * add bios information to git comment.
