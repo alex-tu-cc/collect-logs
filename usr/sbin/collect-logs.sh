@@ -37,8 +37,8 @@ main() {
     sudo lshw > "$LOGS_FOLDER/lshw.log"
     mkdir -p "$LOGS_FOLDER/proc"
     cat /proc/cmdline > "$LOGS_FOLDER/proc/cmdline"
-    xrandr > "$LOGS_FOLDER/proc/xrandr" || touch "$LOGS_FOLDER/proc/xrandr.failed"
-    xrandr --listproviders > "$LOGS_FOLDER/proc/xrandr--listproviders" || touch "$LOGS_FOLDER/proc/xrandr.failed"
+    xrandr > "$LOGS_FOLDER/xrandr" || touch "$LOGS_FOLDER/xrandr.failed"
+    xrandr --listproviders > "$LOGS_FOLDER/xrandr--listproviders" || touch "$LOGS_FOLDER/xrandr.failed"
 
     get_nvme_info
     get_kernel_information
@@ -76,7 +76,7 @@ get_nvme_info()
 get_kernel_information()
 {
     # get glxinfo
-    glxinfo > "$LOGS_FOLDER/glxinfo.log" || touch "$LOGS_FOLDER/proc/xrandr.failed"
+    glxinfo > "$LOGS_FOLDER/glxinfo.log" || touch "$LOGS_FOLDER/glxinfo.log.failed"
     # get kernel config
     local local_kernel_build=/lib/modules/`uname -r`/build/
     mkdir -p $LOGS_FOLDER/$local_kernel_build
@@ -189,7 +189,7 @@ get_etc_default_files(){
 
 
 get_xinput_logs() {
-    xinput > "$LOGS_FOLDER/xinput.log" || touch "$LOGS_FOLDER/proc/xrandr.failed"
+    xinput > "$LOGS_FOLDER/xinput.log" || touch "$LOGS_FOLDER/xinput.log.failed"
 }
 
 
