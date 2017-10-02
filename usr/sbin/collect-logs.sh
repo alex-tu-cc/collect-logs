@@ -12,7 +12,7 @@ main() {
     if [ ! -d ".git" ]; then
         git init
     else
-        rm -rf "$LOGS_FOLDER/*"
+        rm -rf $LOGS_FOLDER/*
 #        git clean -x -d -f
 #        git checkout . || true
     fi
