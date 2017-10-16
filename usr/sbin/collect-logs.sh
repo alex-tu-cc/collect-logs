@@ -118,6 +118,16 @@ get_bios_info() {
     sudo dmidecode > "$LOGS_FOLDER/dmidecode.log"
     [[ ! -x $(which acpidump) ]] && sudo apt-get install -y acpidump
     sudo acpidump > "$LOGS_FOLDER/acpi.log"
+# refer to https://github.com/Bumblebee-Project/bbswitch
+    local tmp_folder=$(mktemp -d)
+    pushd $tmp_folder
+        git clone git://github.com/Lekensteyn/acpi-stuff.git --depth 1
+        cd acpi-stuff/acpi_dump_info
+        make
+        sudo make load || true
+        cat /proc/acpi/dump_info | tee $LOGS_FOLDER/acpi_used_handles.log
+    popd
+
 }
 
 get_audio_logs() {
@@ -180,6 +190,7 @@ get_system_logs() {
     cat dmesg | sed 's/[0-9]*\.[0-9]*\]//g' > "$LOGS_FOLDER/dmesg.stripped"
     find /var/log/syslog | cpio -p --make-directories "$LOGS_FOLDER"
     find /var/log/Xorg.0* | cpio -p --make-directories "$LOGS_FOLDER"
+    find /var/log/gpu-manager.log* | cpio -p --make-directories "$LOGS_FOLDER"
     journalctl > "$LOGS_FOLDER/journalctl.log"
 }
 
