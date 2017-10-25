@@ -43,7 +43,6 @@ main() {
     get_nvme_info
     get_kernel_information
     [[ "$FULL" == "1" ]] && get_kernel_debug_files
-    get_bios_info
     get_audio_logs
     get_nvidia_logs
     get_wwan_card_logs
@@ -52,6 +51,7 @@ main() {
     get_xinput_logs
     get_system_logs
     get_etc_default_files
+    get_bios_info
 
     dpkg -l > "$LOGS_FOLDER/dpkg-l.log"
     ps -ef > "$LOGS_FOLDER/ps-ef.log"
