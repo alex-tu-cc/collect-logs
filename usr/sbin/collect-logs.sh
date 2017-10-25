@@ -131,6 +131,7 @@ get_bios_info() {
         make
         sudo make load || true
         cat /proc/acpi/dump_info | tee $LOGS_FOLDER/acpi_used_handles.log
+        lsmod | grep acpi_dump_info && rmmod acpi_dump_info
     popd
 
 }
