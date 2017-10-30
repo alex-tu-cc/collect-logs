@@ -27,8 +27,8 @@ main() {
     sudo lsusb -v > "$LOGS_FOLDER/lsusb-v.log"
     lsmod > "$LOGS_FOLDER/lsmod.log"
     [[ -e `which dkms` ]] &&  dkms status > "$LOGS_FOLDER/dkms-status.log"
-    rfkill list > "$LOGS_FOLDER/rfkill-l.log"
-    hciconfig > "$LOGS_FOLDER/hciconfig.log"
+
+
     udevadm info -e > "$LOGS_FOLDER/udevadm-info-e.log"
     uname -a > "$LOGS_FOLDER/uname-a.log"
     uname -a > "$LOGS_FOLDER/uname-a.log"
@@ -42,12 +42,9 @@ main() {
 
     get_nvme_info
     get_kernel_information
-    [[ "$FULL" == "1" ]] && get_kernel_debug_files
-    get_bios_info
     get_audio_logs
     get_nvidia_logs
-    get_wwan_card_logs
-    get_network_manager_logs
+    get_network_logs
     get_manifest_from_recovery || true
     get_xinput_logs
     get_system_logs
@@ -56,15 +53,31 @@ main() {
     dpkg -l > "$LOGS_FOLDER/dpkg-l.log"
     ps -ef > "$LOGS_FOLDER/ps-ef.log"
 
+    [[ "$FULL" == "1" ]] && get_kernel_debug_files
 # commit logs.
     cd "$LOGS_FOLDER"
     git add .
     git commit -m "collected from $(cat /sys/devices/virtual/dmi/id/product_name) + BIOS $(grep -m 1 Version dmidecode.log)"
-
-
-
 }
 
+
+get_network_logs(){
+get_ethnet_logs
+get_wwan_card_logs
+get_network_manager_logs
+rfkill list > "$LOGS_FOLDER/rfkill-l.log"
+hciconfig > "$LOGS_FOLDER/hciconfig.log"
+}
+
+get_ethnet_logs()
+{
+    ifconfig > "$LOGS_FOLDER/ifconfig.log"
+    for eth_if in $(netstat -i  | awk '{print $1}' | grep "enp\|eth"); do
+       ethtool $eth_if >> "$LOGS_FOLDER/ethtool.log"
+       ethtool -e $eth_if >> "$LOGS_FOLDER/ethtool_dump.log"
+    done
+    ip address >> "$LOGS_FOLDER/ip_address.log"
+}
 get_nvme_info()
 {
    if  mount | grep nvme;then
@@ -108,6 +121,8 @@ collect_kernel_debug_file()
         [[ $(basename "$1") == "amdgpu_gtt" ]] && return
         [[ $(basename "$1") == "amdgpu_vram" ]] && return
         echo "$1" | cpio -p --make-directories "$LOGS_FOLDER" && cat "$1" > "$LOGS_FOLDER/$1"&
+        # take care some hug sys node which can not be filter out before.
+        [[ $(stat -c %s "$LOGS_FOLDER/$1") > 10000 ]] || rm -rf "$LOGS_FOLDER/$1"
     fi
 }
 
