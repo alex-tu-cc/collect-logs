@@ -1,3 +1,21 @@
+debug-logs-collector (1.3.33) xenial; urgency=medium
+
+  * remove acpi_dump_info which for get debug message.
+
+ -- Alex Tu <alex.tu@canonical.com>  Wed, 25 Oct 2017 18:05:33 +0800
+
+debug-logs-collector (1.3.32) xenial; urgency=medium
+
+  * filter out huge amd debug stuff.
+
+ -- Alex Tu <alex.tu@canonical.com>  Wed, 25 Oct 2017 17:48:28 +0800
+
+debug-logs-collector (1.3.31) xenial; urgency=medium
+
+  * move get bios information to tail of process
+
+ -- Alex Tu <alex.tu@canonical.com>  Wed, 25 Oct 2017 17:13:14 +0800
+
 debug-logs-collector (1.3.30.1) xenial; urgency=medium
 
   * bump version 

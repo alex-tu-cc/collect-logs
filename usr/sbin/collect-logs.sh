@@ -49,6 +49,7 @@ main() {
     get_xinput_logs
     get_system_logs
     get_etc_default_files
+    get_bios_info
 
     dpkg -l > "$LOGS_FOLDER/dpkg-l.log"
     ps -ef > "$LOGS_FOLDER/ps-ef.log"
@@ -120,6 +121,11 @@ collect_kernel_debug_file()
         [[ $(basename "$1") == "access" ]] && return
         [[ $(basename "$1") == "amdgpu_gtt" ]] && return
         [[ $(basename "$1") == "amdgpu_vram" ]] && return
+        [[ $(basename "$1") == "amdgpu_wave" ]] && return
+        [[ $(basename "$1") == "amdgpu_regs_smc" ]] && return
+        [[ $(basename "$1") == "amdgpu_regs_pcie" ]] && return
+        [[ $(basename "$1") == "amdgpu_regs_didt" ]] && return
+        [[ $(basename "$1") == "amdgpu_gpr" ]] && return
         echo "$1" | cpio -p --make-directories "$LOGS_FOLDER" && cat "$1" > "$LOGS_FOLDER/$1"&
         # take care some hug sys node which can not be filter out before.
         [[ $(stat -c %s "$LOGS_FOLDER/$1") > 10000 ]] || rm -rf "$LOGS_FOLDER/$1"
@@ -141,6 +147,7 @@ get_bios_info() {
         make
         sudo make load || true
         cat /proc/acpi/dump_info | tee $LOGS_FOLDER/acpi_used_handles.log
+        lsmod | grep acpi_dump_info && rmmod acpi_dump_info
     popd
 
 }
