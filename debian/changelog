@@ -1,3 +1,9 @@
+debug-logs-collector (1.3.34) xenial; urgency=medium
+
+  * add ethtool
+
+ -- Alex Tu <alex.tu@canonical.com>  Tue, 31 Oct 2017 17:37:31 +0800
+
 debug-logs-collector (1.3.33) xenial; urgency=medium
 
   * remove acpi_dump_info which for get debug message.
