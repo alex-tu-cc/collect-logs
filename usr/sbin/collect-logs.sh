@@ -2,6 +2,7 @@
 LOGS_FOLDER="$HOME/collect-logs"
 set -x
 set -e
+TIME_OUT="timeout 5s"
 main() {
 # record the user name for check-hw-changes.sh notification.
     echo $USER | sudo tee /usr/share/collect-logs/config
@@ -37,8 +38,8 @@ main() {
     sudo lshw > "$LOGS_FOLDER/lshw.log"
     mkdir -p "$LOGS_FOLDER/proc"
     cat /proc/cmdline > "$LOGS_FOLDER/proc/cmdline"
-    xrandr > "$LOGS_FOLDER/xrandr" || touch "$LOGS_FOLDER/xrandr.failed"
-    xrandr --listproviders > "$LOGS_FOLDER/xrandr--listproviders" || touch "$LOGS_FOLDER/xrandr.failed"
+    $TIME_OUT xrandr > "$LOGS_FOLDER/xrandr" || touch "$LOGS_FOLDER/xrandr.failed"
+    $TIME_OUT xrandr --listproviders > "$LOGS_FOLDER/xrandr--listproviders" || touch "$LOGS_FOLDER/xrandr.failed"
 
     get_nvme_info
     get_kernel_information
@@ -90,7 +91,7 @@ get_nvme_info()
 get_kernel_information()
 {
     # get glxinfo
-    glxinfo > "$LOGS_FOLDER/glxinfo.log" || touch "$LOGS_FOLDER/glxinfo.log.failed"
+    $TIME_OUT glxinfo > "$LOGS_FOLDER/glxinfo.log" || touch "$LOGS_FOLDER/glxinfo.log.failed"
     # get kernel config
     local local_kernel_build=/lib/modules/`uname -r`/build/
     mkdir -p $LOGS_FOLDER/$local_kernel_build
@@ -154,7 +155,7 @@ get_bios_info() {
 }
 
 get_audio_logs() {
-    [[ -e $(which alsa-info.sh) ]] && alsa-info.sh --stdout > "$LOGS_FOLDER/alsa-info.log" || true
+    [[ -e $(which alsa-info.sh) ]] && $TIME_OUT alsa-info.sh --stdout > "$LOGS_FOLDER/alsa-info.log" || touch "$LOGS_FOLDER/alsa-info.failed"
 }
 
 get_nvidia_logs() {
@@ -223,7 +224,7 @@ get_etc_default_files(){
 
 
 get_xinput_logs() {
-    xinput > "$LOGS_FOLDER/xinput.log" || touch "$LOGS_FOLDER/xinput.log.failed"
+    $TIME_OUT xinput > "$LOGS_FOLDER/xinput.log" || touch "$LOGS_FOLDER/xinput.log.failed"
 }
 
 
