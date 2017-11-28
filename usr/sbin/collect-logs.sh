@@ -211,7 +211,7 @@ get_manifest_from_recovery() {
 
 get_system_logs() {
     dmesg > "$LOGS_FOLDER/dmesg.log"
-    cat dmesg | sed 's/[0-9]*\.[0-9]*\]//g' > "$LOGS_FOLDER/dmesg.stripped"
+    cat dmesg.log | sed 's/[0-9]*\.[0-9]*\]//g' > "$LOGS_FOLDER/dmesg.stripped"
     find /var/log/syslog | cpio -p --make-directories "$LOGS_FOLDER"
     find /var/log/Xorg.0* | cpio -p --make-directories "$LOGS_FOLDER"
     find /var/log/gpu-manager.log* | cpio -p --make-directories "$LOGS_FOLDER"
