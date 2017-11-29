@@ -139,6 +139,7 @@ get_bios_info() {
 #    mkdir -p "$bios_logs_folder"
 #    sudo dmidecode > "$bios_logs_folder/dmidecode.log"
     sudo dmidecode > "$LOGS_FOLDER/dmidecode.log"
+    sudo dmidecode -t 11 > "$LOGS_FOLDER/dmidecode-t11.log"
     [[ ! -x $(which acpidump) ]] && sudo apt-get install -y acpidump
     sudo acpidump > "$LOGS_FOLDER/acpi.log"
 # refer to https://github.com/Bumblebee-Project/bbswitch
